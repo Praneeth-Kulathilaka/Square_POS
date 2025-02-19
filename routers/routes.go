@@ -14,7 +14,8 @@ func SetRoute() *mux.Router {
 	r.HandleFunc("/order/{order_id}",controllers.GetOrder).Methods(http.MethodGet)
 	r.HandleFunc("/pay",controllers.PayOrder).Methods(http.MethodPost)
 
-	r.HandleFunc("/register",controllers.RegisterUser).Methods(http.MethodPost)
+	r.HandleFunc("/register",controllers.RegisterRestaurant).Methods(http.MethodPost)
+	r.HandleFunc("/login",controllers.LogintoRestaurant).Methods(http.MethodPost)
 
 
 
