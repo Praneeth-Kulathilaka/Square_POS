@@ -1,5 +1,6 @@
 package models
 
+// Data types for making payment request
 type PaymentRequest struct {
 	IdempotencyKey string `json:"idempotency_key"`
 	AmountMoney struct {

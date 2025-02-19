@@ -2,14 +2,13 @@ package controllers
 
 import (
 	"Square_Pos/app/models"
+	"Square_Pos/app/shared"
 	"Square_Pos/app/square"
 	"encoding/json"
 	"fmt"
 
 	"log"
 	"net/http"
-
-	
 
 	"github.com/gorilla/mux"
 )
@@ -26,20 +25,11 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	response, err := square.MakeRequest(http.MethodPost, "/orders", &data)
 	if err != nil {
+		http.Error(w,"Square error", http.StatusInternalServerError)
 		log.Println("Error calling square function: ",err)
 		return
 	}
-	// log.Println(response)
-
-	var result map[string]interface{}
-	err = json.Unmarshal(response, &result)
-	if err != nil {
-		log.Println("Error unmarshalling data: ",err)
-		return
-	}
-	w.Header().Set("Content-Type","application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(result)
+	shared.WriteResponse(response, w)
 }
 
 func GetOrder (w http.ResponseWriter, r *http.Request) {
@@ -53,18 +43,11 @@ func GetOrder (w http.ResponseWriter, r *http.Request) {
 	
 	response, err := square.MakeRequest(http.MethodGet, fmt.Sprintf("/orders/%s",order_id), nil)
 	if err != nil {
+		http.Error(w,"Square error", http.StatusInternalServerError)
 		log.Println("Error calling square function: ",err)
 		return
 	}
-	var result map[string]interface{}
-	err = json.Unmarshal(response, &result)
-	if err != nil {
-		log.Println("Error unmarshalling data: ",err)
-		return
-	}
-	w.Header().Set("Content-Type","application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(result)
+	shared.WriteResponse(response, w)
 }
 
 func PayOrder (w http.ResponseWriter, r *http.Request){
@@ -78,17 +61,9 @@ func PayOrder (w http.ResponseWriter, r *http.Request){
 	}
 	response, err := square.MakeRequest(http.MethodPost, "/payments", &payData)
 	if err != nil {
+		http.Error(w,"Square error", http.StatusInternalServerError)
 		log.Println("Error calling square function: ",err)
 		return
 	}
-
-	var result map[string]interface{}
-	err = json.Unmarshal(response, &result)
-	if err != nil {
-		log.Println("Error unmarshalling data: ",err)
-		return
-	}
-	w.Header().Set("Content-Type","application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(result)
+	shared.WriteResponse(response,w)
 }
