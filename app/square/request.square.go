@@ -17,30 +17,39 @@ import (
 
 const baseUrl = "https://connect.squareupsandbox.com/v2"
 
-// var emptyPayload models.Payload
 
-func MakeRequest(method, endpoint string, data models.OrderRequest) ([]byte, error) {
+func MakeRequest(method, endpoint string, data *models.OrderRequest) ([]byte, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Warning: No .env file found")
 	}
 	url := baseUrl + endpoint
+	log.Println("URL: ",url)
 
 	accesToken := os.Getenv("SQUARE_ACCESS_TOKEN")
 	log.Println("Access token: ",accesToken)
 
 	var reqBody []byte
-	reqBody, _ = json.Marshal(data)
+	var req *http.Request
+	if method == http.MethodPost {
+		reqBody, _ = json.Marshal(data)	
+		req, _ = http.NewRequest(method, url, bytes.NewBuffer(reqBody))
+	} else if method == http.MethodGet {
+		req, _ = http.NewRequest(method, url, nil)
+	}
 
-	req, _ := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
+	req.Header.Set("Square-Version", "2025-01-23")
 	req.Header.Set("Authorization", "Bearer "+accesToken)
 	req.Header.Set("Content-Type","application/json")
 	client := &http.Client{}
+	log.Println("Get req",req)
 	resp, err := client.Do(req)
+	
 	if err != nil {
 		log.Println("Error in HTTP Request",err)
 		return nil, err
 	}
+	// log.Println("Response",resp)
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode >= 400 {
 		return nil, fmt.Errorf("square api error: %s",body)

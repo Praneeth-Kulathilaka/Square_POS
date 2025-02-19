@@ -21,6 +21,3 @@ type LineItem struct {
 }
 
 
-type OrderResponse struct {
-	
-}
