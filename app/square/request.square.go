@@ -1,7 +1,7 @@
 package square
 
 import (
-	"Square_Pos/app/models"
+	// "Square_Pos/app/models"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -18,7 +18,7 @@ import (
 const baseUrl = "https://connect.squareupsandbox.com/v2"
 
 
-func MakeRequest(method, endpoint string, data *models.OrderRequest) ([]byte, error) {
+func MakeRequest(method, endpoint string, data interface{}) ([]byte, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Warning: No .env file found")
@@ -42,7 +42,6 @@ func MakeRequest(method, endpoint string, data *models.OrderRequest) ([]byte, er
 	req.Header.Set("Authorization", "Bearer "+accesToken)
 	req.Header.Set("Content-Type","application/json")
 	client := &http.Client{}
-	log.Println("Get req",req)
 	resp, err := client.Do(req)
 	
 	if err != nil {
