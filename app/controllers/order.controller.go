@@ -4,6 +4,7 @@ import (
 	"Square_Pos/app/auth"
 	"Square_Pos/app/models"
 	"Square_Pos/app/parser"
+	// "Square_Pos/app/shared"
 	"Square_Pos/app/square"
 	"encoding/json"
 	"fmt"
@@ -44,6 +45,8 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error:", err)
 		return
 	}
+
+	log.Println("Response: ",squareResp.Order.TableID)
 
 	newOrder := parser.ParseOrder(squareResp)
 	w.Header().Set("Content-Type", "application/json")

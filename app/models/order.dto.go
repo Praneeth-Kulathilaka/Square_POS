@@ -2,11 +2,11 @@ package models
 
 //Data types for creating order
 type OrderRequest struct {
-	IdempotencyKey string `json:"idempotency_key"`
 	Order          Order  `json:"order"`
 }
 
 type Order struct {
+	ReferenceId string `json:"reference_id"`
 	LocationID string       `json:"location_id"`
 	LineItems  []LineItem   `json:"line_items"`
 }

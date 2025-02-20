@@ -2,6 +2,7 @@ package parser
 
 import (
 	"Square_Pos/app/parser/dto"
+	"log"
 	"strconv"
 )
 
@@ -10,7 +11,7 @@ type SquareOrderResponse struct {
 		ID        string `json:"id"`
 		State     string `json:"state"`
 		CreatedAt string `json:"created_at"`
-		TableID   string `josn:"location_id"`
+		TableID   string `json:"reference_id"`
 		LineItems []struct {
 			Name           string `json:"name"`
 			Quantity       string `json:"quantity"`
@@ -58,6 +59,7 @@ type SquareOrderResponse struct {
 }
 
 func ParseOrder(squareResp SquareOrderResponse) dto.OrderResponse {
+	log.Println("Reference Id: ",squareResp.Order.TableID)
 	order := dto.OrderResponse{
 		ID: squareResp.Order.ID,
 		OpenedAt: squareResp.Order.CreatedAt,
