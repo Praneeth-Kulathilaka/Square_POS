@@ -23,12 +23,12 @@ type SquareOrderResponse struct {
 			Modifiers []struct {
 				BasePriceMoney struct {
 					Amount int64 `json:"amount"`
-				} `json:"base_prize_money"`
+				} `json:"base_price_money"`
 				Name string `json:"name"`
 				Quantity string `json:"quantity"`
 				TotalMoney struct {
 					Amount int64 `json:"amount"`
-				} `json:"total_prize_money"`
+				} `json:"total_price_money"`
 			} `json:"modifiers"`
 		} `json:"line_items"`
 		NetAmounts struct {

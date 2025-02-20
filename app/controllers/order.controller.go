@@ -4,7 +4,6 @@ import (
 	"Square_Pos/app/auth"
 	"Square_Pos/app/models"
 	"Square_Pos/app/parser"
-	"Square_Pos/app/shared"
 	"Square_Pos/app/square"
 	"encoding/json"
 	"fmt"
@@ -74,7 +73,19 @@ func GetOrder (w http.ResponseWriter, r *http.Request) {
 		log.Println("Error calling square function: ",err)
 		return
 	}
-	shared.WriteResponse(response, w)
+	var squareResp parser.SquareOrderResponse
+
+	err = json.Unmarshal(response, &squareResp)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	newOrder := parser.ParseOrder(squareResp)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(newOrder)
+	// shared.WriteResponse(response, w)
 }
 
 func PayOrder (w http.ResponseWriter, r *http.Request){
@@ -99,5 +110,14 @@ func PayOrder (w http.ResponseWriter, r *http.Request){
 		log.Println("Error calling square function: ",err)
 		return
 	}
-	shared.WriteResponse(response,w)
+	var result map[string]interface{}
+	err = json.Unmarshal(response, &result)
+	if err != nil {
+		log.Println("Error unmarshalling data: ", err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(result)
+	// shared.WriteResponse(response,w)
 }
