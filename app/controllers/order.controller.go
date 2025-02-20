@@ -3,6 +3,7 @@ package controllers
 import (
 	"Square_Pos/app/auth"
 	"Square_Pos/app/models"
+	"Square_Pos/app/parser"
 	"Square_Pos/app/shared"
 	"Square_Pos/app/square"
 	"encoding/json"
@@ -36,7 +37,20 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error calling square function: ",err)
 		return
 	}
-	shared.WriteResponse(response, w)
+
+	var squareResp parser.SquareOrderResponse
+
+	err = json.Unmarshal(response, &squareResp)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	newOrder := parser.ParseOrder(squareResp)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(newOrder)
+	// shared.WriteResponse(response, w)
 }
 
 func GetOrder (w http.ResponseWriter, r *http.Request) {
@@ -81,7 +95,7 @@ func PayOrder (w http.ResponseWriter, r *http.Request){
 
 	response, err := square.MakeRequest(http.MethodPost, "/payments", accessToken, &payData)
 	if err != nil {
-		http.Error(w,"Square error", http.StatusInternalServerError)
+		http.Error(w,"Square error", http.StatusInternalServerError) 
 		log.Println("Error calling square function: ",err)
 		return
 	}
