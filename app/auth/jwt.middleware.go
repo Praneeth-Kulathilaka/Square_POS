@@ -2,6 +2,8 @@ package auth
 
 import (
 	"Square_Pos/app/models"
+	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -9,6 +11,13 @@ import (
 )
 
 var jwtSecret = []byte("my-jwt-secret-key")
+
+type contextKey string
+
+const (
+	UserContextKey        contextKey = "restaurantID"
+	SquareAccessTokenKey  contextKey = "squareAccessToken"
+)
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
@@ -22,10 +31,15 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 			return jwtSecret, nil
 		})
+		log.Println("Claims",claims.RestaurantId)
 		if err != nil || !token.Valid {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-		next.ServeHTTP(w,r)
+
+		// Store the extracted data from the token in context
+		ctx := context.WithValue(r.Context(), UserContextKey, claims.RestaurantId)
+		ctx = context.WithValue(ctx,SquareAccessTokenKey, claims.Square_Access_Key)
+		next.ServeHTTP(w,r.WithContext(ctx))
 	})
 }

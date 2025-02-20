@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"Square_Pos/app/auth"
 	"Square_Pos/app/models"
 	"Square_Pos/app/shared"
 	"Square_Pos/app/square"
@@ -16,6 +17,12 @@ import (
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	var data models.OrderRequest
 
+	restaurant_id := r.Context().Value(auth.UserContextKey).(int)
+	log.Println("Restaurant Id:",restaurant_id)
+
+	accessToken := r.Context().Value(auth.SquareAccessTokenKey).(string)
+	log.Println("Square access key: ",accessToken)
+
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, "Invalid JSON request", http.StatusBadRequest)
@@ -23,7 +30,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := square.MakeRequest(http.MethodPost, "/orders", &data)
+	response, err := square.MakeRequest(http.MethodPost, "/orders",accessToken, &data)
 	if err != nil {
 		http.Error(w,"Square error", http.StatusInternalServerError)
 		log.Println("Error calling square function: ",err)
@@ -40,8 +47,14 @@ func GetOrder (w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid order id", http.StatusBadRequest)
 		return
 	}
+
+	restaurant_id := r.Context().Value(auth.UserContextKey).(int)
+	log.Println("Restaurant Id:",restaurant_id)
+
+	accessToken := r.Context().Value(auth.SquareAccessTokenKey).(string)
+	log.Println("Square access key: ",accessToken)
 	
-	response, err := square.MakeRequest(http.MethodGet, fmt.Sprintf("/orders/%s",order_id), nil)
+	response, err := square.MakeRequest(http.MethodGet, fmt.Sprintf("/orders/%s",order_id), accessToken, nil)
 	if err != nil {
 		http.Error(w,"Square error", http.StatusInternalServerError)
 		log.Println("Error calling square function: ",err)
@@ -59,7 +72,14 @@ func PayOrder (w http.ResponseWriter, r *http.Request){
 		log.Println("error",err)
 		return
 	}
-	response, err := square.MakeRequest(http.MethodPost, "/payments", &payData)
+
+	restaurant_id := r.Context().Value(auth.UserContextKey).(int)
+	log.Println("Restaurant Id:",restaurant_id)
+
+	accessToken := r.Context().Value(auth.SquareAccessTokenKey).(string)
+	log.Println("Square access key: ",accessToken)
+
+	response, err := square.MakeRequest(http.MethodPost, "/payments", accessToken, &payData)
 	if err != nil {
 		http.Error(w,"Square error", http.StatusInternalServerError)
 		log.Println("Error calling square function: ",err)

@@ -10,24 +10,24 @@ import (
 	// "io/ioutil"
 	"log"
 	"net/http"
-	"os"
+	// "os"
 
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 const baseUrl = "https://connect.squareupsandbox.com/v2"
 
 
-func MakeRequest(method, endpoint string, data interface{}) ([]byte, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: No .env file found")
-	}
+func MakeRequest(method, endpoint, accessToken string, data interface{}) ([]byte, error) {
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Println("Warning: No .env file found")
+	// }
 	url := baseUrl + endpoint
 	log.Println("URL: ",url)
 
-	accesToken := os.Getenv("SQUARE_ACCESS_TOKEN")
-	log.Println("Access token: ",accesToken)
+	// accesToken := os.Getenv("SQUARE_ACCESS_TOKEN")
+	// log.Println("Access token: ",accesToken)
 
 	var reqBody []byte
 	var req *http.Request
@@ -39,7 +39,7 @@ func MakeRequest(method, endpoint string, data interface{}) ([]byte, error) {
 	}
 
 	req.Header.Set("Square-Version", "2025-01-23")
-	req.Header.Set("Authorization", "Bearer "+accesToken)
+	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Content-Type","application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
